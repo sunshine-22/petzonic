@@ -12,11 +12,10 @@ import { storage } from './firebase-config';
 import { collection, getDocs,doc, setDoc,addDoc,query  } from "firebase/firestore"; 
 import { getStorage,ref, uploadBytes,getDownloadURL,uploadBytesResumable } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
-function App() {
+function Product() {
   let params = useParams();
   let navigate = useNavigate();
   const [category,setcategory]=useState("")
-  const [gender,setgender]=useState("")
   const [breedname,setbreedname]=useState("")
   const [age,setage]=useState("")
   const [about,setabout]=useState("")
@@ -26,30 +25,29 @@ function App() {
   
   const postpet=async()=>{
     let imageurlfire;
-    if(category!="" && gender!="" && breedname!="" && age!="" &&about!=""&&price!=""&&status!=""&&image!=null){
+    if(category!="" && breedname!="" && age!="" &&about!=""&&price!=""&&status!=""&&image!=null){
           
-         console.log(image)
-         const storageRef = ref(storage, `files/${image.name}`);
+         
+         const storageRef = ref(storage, `products/${image.name}`);
          const uploadTask = await uploadBytesResumable(storageRef, image);
          await getDownloadURL(storageRef) .then((url) => {imageurlfire=url})
         
-      const addata=await addDoc(collection(db, "PRODUCTS"), {
+      const addata=await addDoc(collection(db, "SELLINGPRODUCTS"), {
         NAME:params.mobile,
         CONTACT:params.username,
         CATEGORY:category,
-        GENDER:gender,
-        BREED:breedname,
-        AGE:age,
+        PRODUCTNAME:breedname,
+        EXPIRY:age,
         CERTIFIED:status,
         PRICE:price,
         COMMENTS:about,
         IMAGE:imageurlfire
     })
     if(addata.id==null){
-      navigate("/failed");
+        navigate("/failed");
     }
     else{
-      
+    
       navigate("/success");
     }
       
@@ -60,13 +58,13 @@ function App() {
   }
   return (
     <Container>
-      <center><h2>Provide Details For Adoption</h2></center>
+      <center><h2>Provide Details For Product</h2></center>
         <Form className='mt-5'>
             <Row className="mb-3">
               <Form.Group as={Col} controlId="formGridState">
                   <Form.Label>Category</Form.Label>
                   <Form.Select defaultValue="select..." onChange={(e)=>setcategory(e.target.value)}>
-                  <option>select breed...</option>
+                  <option>select Product breed...</option>
                     <option>Birds</option>
                     <option>Cat</option>
                     <option>Dogs</option>
@@ -81,27 +79,19 @@ function App() {
                 </Form.Group>
 
 
-              <Form.Group as={Col} controlId="formGridState">
-                <Form.Label>Gender</Form.Label>
-                <Form.Select defaultValue="Choose..." onChange={(e)=>setgender(e.target.value)}>
-                <option>select gender</option>
-                  <option>Male</option>
-                  <option>Female</option>
-                </Form.Select>
-              </Form.Group>
-
+              
            
           </Row>
 
           <Row className="mb-3">
             <Form.Group as={Col} controlId="formGridEmail">
-              <Form.Label>Breed Name</Form.Label>
-              <Form.Control type="text" placeholder="Enter Breed Name" onChange={(e)=>setbreedname(e.target.value)}/>
+              <Form.Label>Product Name</Form.Label>
+              <Form.Control type="text" placeholder="Enter Product Name" onChange={(e)=>setbreedname(e.target.value)}/>
             </Form.Group>
 
             <Form.Group as={Col} controlId="formGridPassword">
-              <Form.Label>Age</Form.Label>
-              <Form.Control type="number" placeholder="Enter Age" onChange={(e)=>setage(e.target.value)} maxlength="2"/>
+              <Form.Label>Poduct Expiry</Form.Label>
+              <Form.Control type="date" placeholder="Enter date" onChange={(e)=>setage(e.target.value)}/>
             </Form.Group>
           </Row>
 
@@ -152,4 +142,4 @@ function App() {
   );
 }
 
-export default App;
+export default Product;
